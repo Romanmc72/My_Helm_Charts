@@ -17,7 +17,7 @@ and the cluster should be up and running in no time!
 # Oh wait, I forgot to mention...
 This application requires a few other things in order to launch:
 1. A single node k8s cluster (I know, yuck)
-2. on that single node, you have my [flask application code](https://github.com/Romanmc72/flask_app) cloned to /host/flask_app
+2. on that single node, you have my [flask application code](https://github.com/Romanmc72/flask_app) cloned to `/host/flask_app`s
 3. you have a directory created for the postgres container to write to at `/var/lib/postgresql/data/`
 
 okay that is it, then it certainly should work :)

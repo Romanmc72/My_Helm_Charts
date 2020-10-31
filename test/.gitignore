@@ -1,0 +1,3 @@
+# I have it ignored in the other repo because there are passwords there, but
+# here I don't want to ignore it.
+!values.yaml

@@ -2,7 +2,9 @@
 This is the flask app that I install to run my website either locally on minikube or in production on my in-home cluster.
 
 ## Using these charts
-Take a look at the `example.values.yaml` file, and copy that to a `values.yaml` file. Fill in the parts surrounded by carats `<>`. Then create 2 secrets files as laid out by the comments in the bottom of the file.
+Step 1: Clone this repo.
+
+After you do that, take a look at the `example.values.yaml` file, and copy that to a `values.yaml` file. Fill in the parts surrounded by carats `<>`. Then create 2 secrets files as laid out by the comments in the bottom of the file.
 
 After you have filled everything in, and assuming that you have `helm` and `kubectl` already installed as well as your `kubectl` is pointing to a valid k8s cluster that you have the correct permissions to manipulate, you just need to run:
 

@@ -1,0 +1,80 @@
+# Default values for flask_app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+# Fill this in with whatever makes sense for your application. Some of this
+# info is sensitive and some is publicly available, the thing surrounded in
+# carats <> should be replaced with your values.
+# I will update the general structure here but not the particulars.
+replicaCount: 1
+
+name: flask-app
+
+# These are the images I built and placed into my own dockerhub repository.
+# Feel free to make your own or to use mine I do not care.
+image:
+  registry: docker.io
+  repository: romanmc72
+  name: flask
+  tag: 0.0.4  # This may not be the latest tag, it is just an example to check into git.
+
+database:
+  name: postgres-db
+  image: flask-db
+  tag: 0.0.1  # This may not be the latest tag, it is just an example to check into git.
+  repository: romanmc72
+  registry: docker.io
+  db: flask_db
+  port: 5432
+  user: <database-user>  # get your own secret here
+  password: <database-password>  # get your own secret here
+  DNSName: 10.96.0.4
+  mountName: postgres-data
+
+services:
+  frontend:
+    name: http
+    port: 80
+    targetPort: 5000
+    type: LoadBalancer
+  backend:
+    name: postgres
+    port: 5432
+    clusterIP: 10.96.0.4
+
+# You dockerhub credentials, create a free account and access any publicly
+# available images worldwide!
+imageCredentials:
+  registry: docker.io
+  username: <your-dockerhub-username>
+  password: <your-dockerhub-password>
+  email: <your-dockerhub-email>
+
+# Additionally Create these secrets to leverage the flask app image
+# again fill in the details with your secret not mine.
+# ---
+# # First secret
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: flask-secrets
+#   namespace: default
+# type: Opaque
+# data:
+#   mail-username: <redacted>
+#   mail-password: <redacted>
+#   mail-server: <redacted>
+#   mail-use-tls: <redacted>
+#   mail-port: <redacted>
+# ---
+# # Second Secret
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: remote-control
+#   namespace: default
+# type: Opaque
+# data:
+#   garage-username: <redacted>
+#   garage-password: <redacted>
+#   garage-hostname: <redacted>
+# 

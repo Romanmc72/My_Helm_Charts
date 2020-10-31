@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.services.frontend.name }}-service
+spec:
+  type: {{ .Values.services.frontend.type }}
+  ports:
+    - name: {{ .Values.services.frontend.name }}
+      port: {{ .Values.services.frontend.port }}
+      targetPort: {{ .Values.services.frontend.targetPort }}
+      protocol: TCP
+  selector: 
+    app: {{ .Values.name }}-frontend
+    tier: {{ .Values.services.frontend.name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.name }}-frontend
+
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-frontend
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-frontend
+        tier: {{ .Values.services.frontend.name }}
+
+    spec:
+      # This is the flask app itself
+      containers:
+      - name: {{ .Values.name }}
+        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+
+        # So we always want to pull down the image from the registry (defined in values.yaml)
+        # in case it got updated.
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /usr/src/app
+          name: {{ .Values.name }}
+
+        env:
+        - name: DATABASE_URI
+          # idk if this will work. I do not want these as plaintext so
+          # I will have to upload the secrets with kubectl or helm prior to deploying
+          # value: "postgresql+psycopg2://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.name }}-service:{{ .Values.database.port }}/{{ .Values.database.db }}"
+          value: "postgresql+psycopg2://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.DNSName }}:{{ .Values.database.port }}/{{ .Values.database.db }}"
+        - name: MAIL_SERVER
+          valueFrom:
+            secretKeyRef:
+              name: flask-secrets
+              key: mail-server
+        - name: MAIL_PORT
+          valueFrom:
+            secretKeyRef:
+              name: flask-secrets
+              key: mail-port
+        - name: MAIL_USE_TLS
+          valueFrom:
+            secretKeyRef:
+              name: flask-secrets
+              key: mail-use-tls
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: flask-secrets
+              key: mail-password
+        - name: GARAGE_DOOR_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: remote-control
+              key: garage-username
+        - name: GARAGE_DOOR_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: remote-control
+              key: garage-password
+        - name: GARAGE_DOOR_HOSTNAME
+          valueFrom:
+            secretKeyRef:
+              name: remote-control
+              key: garage-hostname
+      restartPolicy: Always
+
+      volumes:
+        - name: {{ .Values.name }}
+          hostPath:
+            path: /host/flask_app
+            type: Directory

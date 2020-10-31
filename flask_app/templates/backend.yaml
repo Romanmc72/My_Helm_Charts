@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.database.name }}-service
+  labels:
+    app: {{ .Values.name }}-backend
+    tier: {{ .Values.services.backend.name }}
+spec:
+  ports:
+    - port: {{ .Values.services.backend.port }}
+  selector:
+    app: {{ .Values.name }}-backend
+    tier: {{ .Values.services.backend.name }}
+  clusterIP: {{ .Values.services.backend.clusterIP }}
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.name }}-backend
+
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-backend
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-backend
+        tier: {{ .Values.services.backend.name }}
+
+    spec:
+      containers:
+      # This is the database container
+      - name: {{ .Values.database.name }}
+        image: "{{ .Values.database.repository }}/{{ .Values.database.image }}:{{ .Values.database.tag }}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5432
+          name: {{ .Values.services.backend.name }}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: {{ .Values.database.mountName }}
+        env:
+        - name: POSTGRES_USER
+          value: "{{ .Values.database.user }}"
+        - name: POSTGRES_DB
+          value: "{{ .Values.database.db }}"
+        - name: POSTGRES_PASSWORD
+          value: "{{ .Values.database.password }}"
+      restartPolicy: Always
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - {{ .Values.database.DNSName }}
+      volumes:
+        - name: {{ .Values.database.mountName }}
+          hostPath:
+            path: /var/lib/postgresql/data
+            type: Directory

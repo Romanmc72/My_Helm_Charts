@@ -60,6 +60,7 @@ imageCredentials:
 #   namespace: default
 # type: Opaque
 # data:
+#   secret-key: <redacted>
 #   mail-username: <redacted>
 #   mail-password: <redacted>
 #   mail-server: <redacted>

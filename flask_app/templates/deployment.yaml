@@ -49,6 +49,11 @@ spec:
           # I will have to upload the secrets with kubectl or helm prior to deploying
           # value: "postgresql+psycopg2://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.name }}-service:{{ .Values.database.port }}/{{ .Values.database.db }}"
           value: "postgresql+psycopg2://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.DNSName }}:{{ .Values.database.port }}/{{ .Values.database.db }}"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: flask-secrets
+              key: secret-key
         - name: MAIL_SERVER
           valueFrom:
             secretKeyRef:

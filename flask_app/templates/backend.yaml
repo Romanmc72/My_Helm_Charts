@@ -54,6 +54,8 @@ spec:
       dnsConfig:
         nameservers:
           - {{ .Values.database.DNSName }}
+      nodeSelector:
+        backend: {{ .Values.name }}-backend
       volumes:
         - name: {{ .Values.database.mountName }}
           hostPath:

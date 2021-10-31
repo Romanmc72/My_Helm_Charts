@@ -1,6 +1,6 @@
 # Scoreboard
 
-You have seen this app 3x in my repos. There is one instance in the flask app code standalone, which is referenced as a submodule in my dockerfiles repo, and then finally here. This will manage deploying it on a kubernetes instance somewhere.
+You have seen this app 3x in my repos. There is one instance in the flask app code standalone, which is referenced as a submodule in my Dockerfiles repo, and then finally here. This will manage deploying it on a kubernetes instance somewhere.
 
 ## Deploying
 
@@ -18,7 +18,7 @@ kubectl apply \
 -f scoreboard-db-deployment.yaml,scoreboard-deployment.yaml,scoreboard-db-service.yaml,scoreboard-service.yaml
 ```
 
-and that will apply the app to your cluster. The db deeployment can run on any node, just don't scale it up or you will see some weird behavior. The scoreboard web app though can scale to whatever your like. Default is 1 pod. Scale it with:
+and that will apply the app to your cluster. The db deployment can run on any node, just don't scale it up or you will see some weird behavior. The scoreboard web app though can scale to whatever your like. Default is 1 pod. Scale it with:
 
 ```
 kubectl scale deployment/scoreboard --replicas=#

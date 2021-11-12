@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pi-hole-service
+spec:
+  type: LoadBalancer
+  ports:
+    - name: pi-hole-admin
+      port: 8000
+      targetPort: 80
+      protocol: TCP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+  selector: 
+    service: pi-hole
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: pi-hole
+  name: pi-hole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: pi-hole
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: pi-hole
+    spec:
+      containers:
+        - env:
+          - name: TZ
+            value: "America/Chicago"
+          - name: WEBPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pi-hole-secrets
+                key: webpassword
+          image: pihole/pihole:2021.10.1
+          name: pi-hole
+          ports:
+            - containerPort: 53
+            - containerPort: 80
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/pihole/
+              name: pi-hole-base
+            - mountPath: /etc/dnsmasq.d/
+              name: pi-hile-dnsmasq
+          imagePullPolicy: Always
+      restartPolicy: Always
+      volumes:
+        - name: pi-hole-base
+          hostPath:
+            path: /etc/pihole/
+            type: Directory
+        - name: pi-hile-dnsmasq
+          hostPath:
+            path: /etc/dnsmasq.d/
+            type: Directory
+status: {}

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: is_it_down
+spec:
+  selector:
+    matchLabels:
+      app: is_it_down
+  template:
+    metadata:
+      labels:
+        app: is_it_down
+    spec:
+      containers:
+      - name: is_it_down
+        image: romanmc72/is_it_down:0.0.1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+          - name: IP_TO_PING
+            value: "192.168.0.13"
+          - name: POSTGRES_DBNAME
+            value: flask_db
+          - name: POSTGRES_SCHEMA
+            value: flask_app
+          - name: POSTGRES_TABLE
+            value: is_it_down
+

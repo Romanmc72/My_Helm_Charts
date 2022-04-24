@@ -1,0 +1,138 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: minecraft-server
+  name: minecraft-server-bedrock
+spec:
+  type: "LoadBalancer"
+  ports:
+    - name: "bedrock"
+      port: 19132
+      targetPort: 19132
+      protocol: UDP
+  selector:
+    io.kompose.service: minecraft-server
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: minecraft-server
+  name: minecraft-server-java
+spec:
+  type: "LoadBalancer"
+  ports:
+    - name: "java"
+      port: 25565
+      targetPort: 25565
+  selector:
+    io.kompose.service: minecraft-server
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: minecraft-server
+  name: minecraft-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: minecraft-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: minecraft-server
+    spec:
+      containers:
+        - image: romanmc72/minecraft-server:0.0.10
+          imagePullPolicy: Always
+          name: minecraft-server
+          # These allow you to enter the container and issue minecraft
+          # server commands using
+          #   > kubectl attach -it <POD-NAME>
+          # To detach without killing the pod use Ctrl+P then Ctrl+Q
+          stdin: true
+          tty: true
+          ####################################################################
+          # Change these if your machine has more or less capacity
+          env:
+          # These should match the below, use increments of 1024 here
+          - name: MIN_MEM
+            value: "3072"
+          - name: MAX_MEM
+            value: "3072"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "4G"
+            requests:
+              cpu: "1"
+              memory: "4G"
+          # Change these if your machine has more or less capacity
+          ####################################################################
+          ports:
+            - containerPort: 25565
+            - containerPort: 19132
+              protocol: UDP
+          volumeMounts:
+            # Persists the world data on server restarts
+            - mountPath: /home/minecraft/world
+              name: minecraft-server-data-world
+            # Persists the nether data on server restarts
+            - mountPath: /home/minecraft/world_nether
+              name: minecraft-server-data-nether
+            # Persists the end data on server restarts
+            - mountPath: /home/minecraft/world_the_end
+              name: minecraft-server-data-end
+            # Persists the player whitelist on restarts
+            # - mountPath: /home/minecraft/whitelist.json
+            #   name: player-whitelist
+            #   subPath: whitelist.json
+      restartPolicy: Always
+      nodeSelector:
+        minecraft-server: "true"
+      volumes:
+        - name: minecraft-server-data-world
+          hostPath:
+            # Change this line if your host machine has a different location
+            # for the world data
+            path: /minecraft/world
+        - name: minecraft-server-data-nether
+          hostPath:
+            # Change this line if your host machine has a different location
+            # for the nether data
+            path: /minecraft/world_nether
+        - name: minecraft-server-data-end
+          hostPath:
+            # Change this line if your host machine has a different location
+            # for the end data
+            path: /minecraft/world_the_end
+        # - name: player-whitelist
+        #   hostPath:
+        #     # Change this line if your host machine has a different location
+        #     # for the whitelist
+        #     path: /minecraft/whitelist.json

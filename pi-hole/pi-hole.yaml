@@ -8,6 +8,7 @@ spec:
     - name: dns-udp
       port: 53
       targetPort: 53
+      nodePort: 30386
       protocol: UDP
   selector: 
     service: pi-hole
@@ -22,10 +23,12 @@ spec:
     - name: pi-hole-admin
       port: 8000
       targetPort: 80
+      nodePort: 30661
       protocol: TCP
     - name: dns-tcp
       port: 53
       targetPort: 53
+      nodePort: 31057
       protocol: TCP
   selector: 
     service: pi-hole
@@ -68,6 +71,8 @@ spec:
             - mountPath: /etc/dnsmasq.d/
               name: pi-hile-dnsmasq
           imagePullPolicy: Always
+      nodeSelector:
+        shutYour: pi-hole
       restartPolicy: Always
       volumes:
         - name: pi-hole-base

@@ -23,7 +23,7 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.name }}-backend
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   template:
     metadata:
       labels:

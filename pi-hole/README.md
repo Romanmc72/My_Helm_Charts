@@ -39,12 +39,12 @@ Once that is up on the cluster you just need to ensure that the ports that the k
 stream {
 	server {
         	listen 53 udp;
-        	proxy_pass 0.0.0.0:32224;
+        	proxy_pass 0.0.0.0:30386;
 	}
 
 	server {
         	listen 53 tcp;
-        	proxy_pass 0.0.0.0:31781;
+        	proxy_pass 0.0.0.0:30661;
 	}
 
 }

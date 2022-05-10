@@ -92,6 +92,11 @@ spec:
               key: garage-hostname
       restartPolicy: Always
 
+      # Hate doing this, but the picture of the garage will be different on
+      # every node unless I pin the containers to one.
+      nodeSelector:
+        frontend: {{ .Values.name }}-frontend
+
       volumes:
         - name: {{ .Values.name }}
           hostPath:

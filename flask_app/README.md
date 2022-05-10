@@ -24,11 +24,13 @@ This application requires a few other things in order to launch:
 
 1. A single node k8s cluster (I know, yuck (minikube also works but you still need the next 2 steps))
 2. on that single node, you have my [flask application code](https://github.com/Romanmc72/flask_app) cloned to `/host/flask_app`
-3. on that single node create a directory for the postgres container to write to at `/var/lib/postgresql/data/`
+3. on that same node, drop any valid jpeg image into the cloned repo as `/host/flask_app/app/static/garage/status.jpg`
+4. on that single node create a directory for the postgres container to write to at `/var/lib/postgresql/data/`
    - Even if you have more than 1 node in the cluster it can still work, you will just need to designate the node containing the database as the backend node using the following command:
 
 ```
 kubectl label nodes <node-name-here> backend=flask-app-backend
+kubectl label nodes <node-name-here> frontend=flask-app-frontend
 ```
 
 okay that is it, then it certainly should work :)

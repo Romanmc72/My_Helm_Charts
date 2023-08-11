@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.daemon.name }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.ports.p2pPort }}
+      targetPort: {{ .Values.ports.p2pPort }}
+      name: p2p-port
+      protocol: TCP
+    - port: {{ .Values.ports.rpcPort }}
+      targetPort: {{ .Values.ports.rpcPort }}
+      name: rpc-port
+      protocol: TCP
+  selector:
+    service: {{ .Values.daemon.name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.daemon.name }}
+  labels:
+    service: {{ .Values.daemon.name }}
+  annotations:
+    currency: XMR
+
+spec:
+  selector:
+    matchLabels:
+      service: {{ .Values.daemon.name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: {{ .Values.daemon.name }}
+
+    spec:
+      containers:
+      - name: {{ .Values.daemon.name }}
+        image: "{{ .Values.images.daemon.repository }}/{{ .Values.images.daemon.name }}:{{ .Values.images.daemon.tag }}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.ports.p2pPort }}
+          name: p2p
+        - containerPort: {{ .Values.ports.rpcPort }}
+          name: rpc
+        env:
+        - name: RPC_PORT
+          value: "{{ .Values.ports.rpcPort }}"
+        - name: P2P_PORT
+          value: "{{ .Values.ports.p2pPort }}"
+        - name: BLOCKCHAIN_DIRECTORY
+          value: "{{ .Values.daemon.blockchain_directory }}"
+        - name: BLOCKCHAIN_RAW
+          value: "{{ .Values.daemon.blockchain_directory }}/blockchain.raw"
+        volumeMounts:
+        - mountPath: {{ .Values.daemon.blockchain_directory }}
+          name: blockchain
+      restartPolicy: Always
+      volumes:
+        - name: blockchain
+          nfs:
+            server: {{ .Values.nfs.address }}
+            path: {{ .Values.nfs.mountPoint }}
+            readOnly: false

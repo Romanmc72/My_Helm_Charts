@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.miner.name }}
+  annotations:
+    currency: XMR
+
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  replicas: {{ .Values.miner.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        tier: {{ .Values.miner.name }}
+
+    spec:
+      containers:
+      - name: {{ .Values.miner.name }}
+        image: "{{ .Values.images.miner.repository }}/{{ .Values.images.miner.name }}:{{ .Values.images.miner.tag }}"
+        imagePullPolicy: Always
+        stdin: true
+        tty: true
+      restartPolicy: Always

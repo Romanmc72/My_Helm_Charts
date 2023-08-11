@@ -24,4 +24,14 @@ spec:
         imagePullPolicy: Always
         stdin: true
         tty: true
+        resources:
+          requests:
+            cpu: "1000"
+            memory: "3Gi"
+            hugepages-2Mi: "2500Mi"
+          limits:
+            cpu: "1000"
+            memory: "3Gi"
+            hugepages-2Mi: "2500Mi"
+
       restartPolicy: Always

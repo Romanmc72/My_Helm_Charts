@@ -3,9 +3,7 @@ name: monero
 
 ports:
   p2pPort: 18080
-  p2pNodePort: 30680
   rpcPort: 18081
-  rpcNodePort: 30681
 
 nfs:
   address: 192.168.0.34

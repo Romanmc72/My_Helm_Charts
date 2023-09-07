@@ -26,12 +26,12 @@ spec:
         tty: true
         resources:
           requests:
-            cpu: "1000"
-            memory: "3Gi"
-            hugepages-2Mi: "2500Mi"
+            cpu: "1000m"
+            memory: "2Gi"
+            hugepages-1Gi: "2Gi"
           limits:
-            cpu: "1000"
-            memory: "3Gi"
-            hugepages-2Mi: "2500Mi"
+            cpu: "1000m"
+            memory: "2Gi"
+            hugepages-1Gi: "2Gi"
 
       restartPolicy: Always
